@@ -25,8 +25,10 @@ public class CheckPt_2 {
     // for the program.
     public void start() {
         try {
+            
             createWindow();
             initGL();
+            fp = new FPCameraController(0f,0f,0f);
             fp.gameLoop();//render();
             } catch (Exception e) { e.printStackTrace(); }
     }
@@ -48,7 +50,7 @@ public class CheckPt_2 {
         }
 
         Display.setDisplayMode(displayMode);
-        Display.setTitle("Rotating Cube - CheckPoint 1");
+        Display.setTitle("Chunk with Simplex Noise - Checkpoint 2");
         Display.create();
     }
     
@@ -79,7 +81,7 @@ public class CheckPt_2 {
     // purpose: this method creates an instance of ThreeDCube and calls the start
     // method, initiating the bulk of the program
     public static void main(String[] args) {
-        fp = new FPCameraController(0f,0f,0f);
+        
         CheckPt_2 basic = new CheckPt_2();
         basic.start();
     }
