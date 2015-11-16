@@ -25,6 +25,7 @@ public class CheckPt_2 {
     // for the program.
     public void start() {
         try {
+            
             createWindow();
             initGL();
             fp = new FPCameraController(0f,0f,0f);
@@ -49,7 +50,7 @@ public class CheckPt_2 {
         }
 
         Display.setDisplayMode(displayMode);
-        Display.setTitle("Rotating Cube - CheckPoint 1");
+        Display.setTitle("Chunk with Simplex Noise - Checkpoint 2");
         Display.create();
     }
     

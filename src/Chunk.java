@@ -342,6 +342,7 @@ public class Chunk {
                 x + offset*2, y + offset*1,};
             default: 
                 //return new float[] { 1, 1, 1 };
+                 System.out.println(block.GetID());
                 return new float[] {
                 // BOTTOM QUAD(DOWN=+Y)
                 x + offset*2, y + offset*2,
