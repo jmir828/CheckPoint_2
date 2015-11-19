@@ -1,5 +1,8 @@
 
 import java.nio.FloatBuffer;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Random;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
@@ -19,6 +22,7 @@ public class Chunk {
     private Random r;
     private int VBOTextureHandle;
     private Texture texture;
+    private Object Calendar;
 
     public void render() {
         glPushMatrix();
@@ -40,7 +44,12 @@ public class Chunk {
     }
 
     public void rebuildMesh(float startX, float startY, float startZ) {
-        SimplexNoise noise = new SimplexNoise(100, 1.0, 5);
+         
+
+        Date today = new Date();
+        int seed = today.getHours()+ today.getMinutes() + today.getSeconds();
+        
+        SimplexNoise noise = new SimplexNoise(100, 1.0, seed);
 
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
@@ -54,16 +63,14 @@ public class Chunk {
         FloatBuffer VertexColorData
                 = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
 
-        double xStart = 0;
-        double XEnd = 500;
-        //double yStart = 0;
-        //double yEnd = 500;
-        double zStart = 0;
-        double zEnd = 500;
+        double xStart = 600;
+        double XEnd = 1000;
+        double zStart = 600;
+        double zEnd = 1000;
 
-        int xResolution = 1000;
+        int xResolution = 800;
         //int yResolution = 1000;
-        int zResolution = 1000;
+        int zResolution = 800;
 
         for (int x = 0; x < CHUNK_SIZE; x += 1) {
             for (int z = 0; z < CHUNK_SIZE; z += 1) {
@@ -71,19 +78,29 @@ public class Chunk {
                 int i = (int) (xStart + x * ((XEnd - xStart) / xResolution));
                 int k = (int) (zStart + z * ((zEnd - zStart) / zResolution));
                 //System.out.println( i +" "+ k);
-                float max = (startY + (int) (noise.getNoise(i, k)) * CUBE_LENGTH);
+               float max = Math.abs((startY + (int) ( noise.getNoise(i, k)) * CUBE_LENGTH));
+                 //float max = (startY + (int) ( noise.getNoise(i, k)) * CUBE_LENGTH);
 
-                if (max < 0) {
+               //System.out.println(max);
+                
+              
+                if (max == 0) {
+                    max = 0;
+                } 
+                else if (max == 2){
+                    
                     max = 1;
-                } else if (max == 2) {
-                    max = 1;
-                } else if (max >= 4) {
-                    max = 2;
-
+                
                 }
-                System.out.println(max);
+                else if (max >= 3){
+                    max = 2;
+                }
+               
+                
+                
+               
+                //System.out.println(max);
                 for (float y = 0; y <= max; y++) {
-
                     VertexPositionData.put(createCube((float) (startX + x * CUBE_LENGTH),
                             (float) (y * CUBE_LENGTH + (int) (CHUNK_SIZE * .8)),
                             (float) (startZ + z * CUBE_LENGTH)));
@@ -91,7 +108,9 @@ public class Chunk {
                     VertexTextureData.put(createTexCube((float) 0, (float) 0, Blocks[(int) (x)][(int) (y)][(int) (z)]));
                 }
             }
+
         }
+
 
         VertexColorData.flip();
         VertexPositionData.flip();
@@ -420,9 +439,9 @@ public class Chunk {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int y = 0; y < CHUNK_SIZE; y++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
-                    //if (r.nextFloat() > 0.8f) {
+                    if (r.nextFloat() > 0.8f) {
                     Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
-                    /*
+                    
                      } else if (r.nextFloat() > 0.7f) {
                      Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Sand);
                      } else if (r.nextFloat() > 0.6f) {
@@ -437,7 +456,8 @@ public class Chunk {
                      Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Default);
                                
                      }
-                     */
+                            
+                     
                 }
             }
         }
