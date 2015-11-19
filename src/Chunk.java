@@ -46,9 +46,9 @@ public class Chunk {
     public void rebuildMesh(float startX, float startY, float startZ) {
          
 
-        Date today = new Date();
-        int seed = today.getHours()+ today.getMinutes() + today.getSeconds();
-        
+    
+        Random ran = new Random();
+        int seed = ran.nextInt() % 100 ;
         SimplexNoise noise = new SimplexNoise(100, 1.0, seed);
 
         VBOColorHandle = glGenBuffers();
