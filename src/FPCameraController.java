@@ -1,4 +1,6 @@
-/*******************************************************************************
+
+        
+        /*******************************************************************************
  * file: Program2.java author: Josue Miramontes 
  * class: CS 445
  * 
@@ -18,8 +20,8 @@ import org.lwjgl.Sys;
 public class FPCameraController {
     private Vector3f position = null; //3d vector to store the camera's position in
     private Vector3f lPosition = null;
-    private float yaw = 0.0f;         //the rotation around the Y axis of the camera
-    private float pitch = 0.0f;       //the rotation around the X axis of the camera
+    private float yaw = -100.0f;         //the rotation around the Y axis of the camera
+    private float pitch = 30.0f;       //the rotation around the X axis of the camera
     private float angle = 0;
     private Chunk chunk = new Chunk(0,0,0);
 
@@ -27,8 +29,8 @@ public class FPCameraController {
     // purpose: initialize an instance of FPCameraController given the provided.
     public FPCameraController(float x, float y, float z) {
         //instantiate position Vector3f to the x y z params.
-        position = new Vector3f(x, y, z);
-        lPosition = new Vector3f(x,y,z);
+        position = new Vector3f(-30, -40, 0);
+        lPosition = new Vector3f(0,0,0);
         lPosition.x = 0f;
         lPosition.y = 15f;
         lPosition.z = 0f;
@@ -86,7 +88,8 @@ public class FPCameraController {
 
     // method: moveUp
     // purpose: moves the camera up relative to its current rotation (yaw)
-    public void moveUp(float distance) { position.y -= distance; }
+    public void moveUp(float distance) { position.y -= distance;
+    }
 
     // method: moveDown
     // purpose: moves the camera down
@@ -112,6 +115,7 @@ public class FPCameraController {
         float dt = 0.0f;                //length of frame
         float lastTime = 0.0f;          // when the last frame was
         long time = 0;
+        camera.yaw = -180; //Postitons Camera
         float mouseSensitivity = 0.09f;
         float movementSpeed = .35f;
         Mouse.setGrabbed(true);         //hide the mouse
@@ -129,7 +133,7 @@ public class FPCameraController {
             camera.yaw(dx * mouseSensitivity);
             //controll camera pitch from y movement fromt the mouse
             camera.pitch(dy * mouseSensitivity);
-
+           
             //when passing in the distance to move
             //we times the movementSpeed with dt this is a time scale
             //so if its a slow frame u move more then a fast frame
