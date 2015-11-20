@@ -1,8 +1,21 @@
-
+/*******************************************************************************
+ * file: Chunk.java
+ * author: Josue Miramontes, Anthony Guzman, Gerret K
+ *                              
+ * class: CS 445
+ * 
+ * assignment: Checkpoint 2 
+ * date last modified: 11/19/2015
+ * 
+ * purpose: The purpose of this program is to render a cluster of blocks, 
+ *          known as a chunk. This chunk is 30 cubes wide with respect to the x
+ *          axis and 30 deep with respect to the z axis. The value for the 
+ *          chunks height, y, is determined by values fed into a Simplex Noise
+ *          generator. The Simplex Noise generator mimics terrain as it should
+ *          look in nature.
+ *
+ ******************************************************************************/
 import java.nio.FloatBuffer;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Random;
 import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
@@ -22,7 +35,6 @@ public class Chunk {
     private Random r;
     private int VBOTextureHandle;
     private Texture texture;
-    private Object Calendar;
 
     public void render() {
         glPushMatrix();
@@ -44,12 +56,10 @@ public class Chunk {
     }
 
     public void rebuildMesh(float startX, float startY, float startZ) {
-         
-
-    
+        
         Random ran = new Random();
-        int seed = ran.nextInt() % 100 ;
-        SimplexNoise noise = new SimplexNoise(100, 1.0, seed);
+        int seed = ran.nextInt() % 100;
+        SimplexNoise noise = new SimplexNoise(1000, .7, seed);
 
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
@@ -63,44 +73,22 @@ public class Chunk {
         FloatBuffer VertexColorData
                 = BufferUtils.createFloatBuffer((CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
 
-        double xStart = 600;
-        double XEnd = 1000;
-        double zStart = 600;
-        double zEnd = 1000;
-
-        int xResolution = 800;
-        //int yResolution = 1000;
-        int zResolution = 800;
-
         for (int x = 0; x < CHUNK_SIZE; x += 1) {
             for (int z = 0; z < CHUNK_SIZE; z += 1) {
 
-                int i = (int) (xStart + x * ((XEnd - xStart) / xResolution));
-                int k = (int) (zStart + z * ((zEnd - zStart) / zResolution));
+                int i = (int) (startX + x * ((500 - startX) / 640));
+                int k = (int) (startZ + z * ((500 - startZ) / 480));
                 //System.out.println( i +" "+ k);
-               float max = Math.abs((startY + (int) ( noise.getNoise(i, k)) * CUBE_LENGTH));
-                 //float max = (startY + (int) ( noise.getNoise(i, k)) * CUBE_LENGTH);
+               
+                double noiseVal = 10*Math.abs(noise.getNoise(i,k));
+                float max = (startY + (int) (noiseVal) );//* CUBE_LENGTH);
 
-               //System.out.println(max);
+                System.out.println("i: " + i + "  k: " + k + "  noiseVal: " + noiseVal + "  max: " + max);
                 
-              
-                if (max == 0) {
-                    max = 0;
-                } 
-                else if (max == 2){
-                    
-                    max = 1;
-                
-                }
-                else if (max >= 3){
-                    max = 2;
-                }
-               
-                
-                
-               
-                //System.out.println(max);
+                //max /= 2;
+
                 for (float y = 0; y <= max; y++) {
+
                     VertexPositionData.put(createCube((float) (startX + x * CUBE_LENGTH),
                             (float) (y * CUBE_LENGTH + (int) (CHUNK_SIZE * .8)),
                             (float) (startZ + z * CUBE_LENGTH)));
@@ -108,9 +96,7 @@ public class Chunk {
                     VertexTextureData.put(createTexCube((float) 0, (float) 0, Blocks[(int) (x)][(int) (y)][(int) (z)]));
                 }
             }
-
         }
-
 
         VertexColorData.flip();
         VertexPositionData.flip();
@@ -171,14 +157,6 @@ public class Chunk {
     }
 
     private float[] getCubeColor(Block block) {
-        switch (block.GetID()) {
-            // case 1:
-            //    return new float[] { 0, 1, 0 };
-            // case 2:
-            //     return new float[] { 1, 0.5f, 0 };
-            // case 3:
-            //    return new float[] { 0, 0f, 1f };
-        }
         return new float[]{1, 1, 1};
     }
 
@@ -285,7 +263,7 @@ public class Chunk {
                     x + offset * 2, y + offset * 12,
                     x + offset * 1, y + offset * 12,
                     x + offset * 1, y + offset * 11,
-                    x + offset * 2, y + offset * 11,};
+                    x + offset * 2, y + offset * 11};
             case 3:
                 //Dirt
                 return new float[]{
@@ -318,7 +296,7 @@ public class Chunk {
                     x + offset * 3, y + offset * 1,
                     x + offset * 2, y + offset * 1,
                     x + offset * 2, y + offset * 0,
-                    x + offset * 3, y + offset * 0,};
+                    x + offset * 3, y + offset * 0};
 
             case 4:
                 //Stone
@@ -352,7 +330,7 @@ public class Chunk {
                     x + offset * 2, y + offset * 1,
                     x + offset * 1, y + offset * 1,
                     x + offset * 1, y + offset * 0,
-                    x + offset * 2, y + offset * 0,};
+                    x + offset * 2, y + offset * 0};
             case 5:
                 //Bedrock
                 return new float[]{
@@ -385,7 +363,7 @@ public class Chunk {
                     x + offset * 2, y + offset * 2,
                     x + offset * 1, y + offset * 2,
                     x + offset * 1, y + offset * 1,
-                    x + offset * 2, y + offset * 1,};
+                    x + offset * 2, y + offset * 1};
             default:
                 //return new float[] { 1, 1, 1 };
                 return new float[]{
@@ -418,8 +396,7 @@ public class Chunk {
                     x + offset * 2, y + offset * 2,
                     x + offset * 1, y + offset * 2,
                     x + offset * 1, y + offset * 1,
-                    x + offset * 2, y + offset * 1,};
-
+                    x + offset * 2, y + offset * 1};
         }
 
     }
@@ -439,25 +416,20 @@ public class Chunk {
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int y = 0; y < CHUNK_SIZE; y++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
-                    if (r.nextFloat() > 0.8f) {
-                    Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
-                    
-                     } else if (r.nextFloat() > 0.7f) {
-                     Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Sand);
-                     } else if (r.nextFloat() > 0.6f) {
-                     Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Water);
-                     } else if (r.nextFloat() > 0.5f) {
-                     Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Dirt);
-                     } else if (r.nextFloat() > 0.4f) {
-                     Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Stone);
-                     } else if (r.nextFloat() > 0.3f) {
-                     Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Bedrock);
-                     } else {
-                     Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Default);
-                               
-                     }
-                            
-                     
+                    if (true)//if (r.nextFloat() > 0.8f)
+                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Grass);
+//                    else if (r.nextFloat() > 0.7f)
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Sand);
+//                    else if (r.nextFloat() > 0.6f)
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Water);
+//                    else if (r.nextFloat() > 0.5f)
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Dirt);
+//                    else if (r.nextFloat() > 0.4f) 
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Stone);
+//                    else if (r.nextFloat() > 0.3f) 
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Bedrock);
+//                    else
+//                        Blocks[x][y][z] = new Block(Block.BlockType.BlockType_Default);
                 }
             }
         }
